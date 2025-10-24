@@ -10,7 +10,6 @@ and its github repo: [here](https://github.com/Cristography/PromptForge)
 
 ---
 
-![alt text](image.png)
 
 ---
 
