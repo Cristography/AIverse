@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Prompts - Prompt Library{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-list"></i> My Prompts</h2>
+        <a href="{% url 'prompts:create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add New Prompt
+        </a>
+    </div>
+    
+    {% if prompts %}
+    <div class="row row-cols-1 g-3">
+        {% for prompt in prompts %}
+        <div class="col">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="card-title mb-2">
+                                <a href="{% url 'prompts:detail' prompt.slug %}" class="text-decoration-none">
+                                    {{ prompt.title }}
+                                </a>
+                            </h5>
+                            <p class="card-text text-muted small mb-2">
+                                {{ prompt.description|truncatewords:30 }}
+                            </p>
+                            <div>
+                                {% if prompt.category %}
+                                <span class="badge bg-primary">{{ prompt.category.name }}</span>
+                                {% endif %}
+                                <span class="badge bg-secondary">{{ prompt.get_difficulty_display }}</span>
+                                <span class="badge bg-{% if prompt.is_published %}success{% else %}warning{% endif %}">
+                                    {% if prompt.is_published %}Published{% else %}Draft{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                            <div class="text-muted small mb-2">
+                                <i class="fas fa-eye"></i> {{ prompt.views }} views<br>
+                                <i class="fas fa-heart"></i> {{ prompt.upvotes }} upvotes<br>
+                                <i class="fas fa-calendar"></i> {{ prompt.created_at|date:"M d, Y" }}
+                            </div>
+                            <a href="{% url 'prompts:detail' prompt.slug %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+        <h4>No prompts yet</h4>
+        <p class="text-muted">Start by submitting your first prompt!</p>
+        <a href="{% url 'prompts:create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Submit Your First Prompt
+        </a>
+    </div>
+    {% endif %}
+    
+</div>
+{% endblock %}

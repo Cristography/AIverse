@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Browse Prompts - Prompt Library{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <!-- Hero Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">
+            <i class="fas fa-lightbulb text-warning"></i> Discover AI Prompts
+        </h1>
+        <p class="lead text-muted">Find the perfect prompt for your AI assistant</p>
+    </div>
+    
+    <!-- Search and Filter Bar -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <!-- Search -->
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" name="search" class="form-control" placeholder="Search prompts..." value="{{ search_query }}">
+                    </div>
+                </div>
+                
+                <!-- Category Filter -->
+                <div class="col-md-2">
+                    <select name="category" class="form-select">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category.slug }}" {% if category.slug == selected_category %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Difficulty Filter -->
+                <div class="col-md-2">
+                    <select name="difficulty" class="form-select">
+                        <option value="">All Levels</option>
+                        <option value="beginner" {% if selected_difficulty == 'beginner' %}selected{% endif %}>Beginner</option>
+                        <option value="intermediate" {% if selected_difficulty == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                        <option value="advanced" {% if selected_difficulty == 'advanced' %}selected{% endif %}>Advanced</option>
+                    </select>
+                </div>
+                
+                <!-- AI Model Filter -->
+                <div class="col-md-2">
+                    <select name="model" class="form-select">
+                        <option value="">All Models</option>
+                        <option value="chatgpt" {% if selected_model == 'chatgpt' %}selected{% endif %}>ChatGPT</option>
+                        <option value="claude" {% if selected_model == 'claude' %}selected{% endif %}>Claude</option>
+                        <option value="gemini" {% if selected_model == 'gemini' %}selected{% endif %}>Gemini</option>
+                    </select>
+                </div>
+                
+                <!-- Sort -->
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Results Count -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="mb-0">
+            {% if search_query %}
+                Search results for "{{ search_query }}" - 
+            {% endif %}
+            {{ page_obj.paginator.count }} prompt{{ page_obj.paginator.count|pluralize }}
+        </h5>
+        
+        <div class="btn-group btn-group-sm">
+            <a href="?sort=-created_at" class="btn btn-outline-secondary {% if sort_by == '-created_at' %}active{% endif %}">
+                <i class="fas fa-clock"></i> Latest
+            </a>
+            <a href="?sort=-views" class="btn btn-outline-secondary {% if sort_by == '-views' %}active{% endif %}">
+                <i class="fas fa-eye"></i> Most Viewed
+            </a>
+            <a href="?sort=-upvotes" class="btn btn-outline-secondary {% if sort_by == '-upvotes' %}active{% endif %}">
+                <i class="fas fa-fire"></i> Popular
+            </a>
+        </div>
+    </div>
+    
+    <!-- Prompts Grid -->
+    {% if prompts %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for prompt in prompts %}
+        <div class="col">
+            <div class="card h-100 shadow-sm hover-lift">
+                <div class="card-body">
+                    <!-- Category Badge -->
+                    {% if prompt.category %}
+                    <span class="badge bg-primary mb-2">{{ prompt.category.name }}</span>
+                    {% endif %}
+                    
+                    <!-- Title -->
+                    <h5 class="card-title">
+                        <a href="{% url 'prompts:detail' prompt.slug %}" class="text-decoration-none text-dark">
+                            {{ prompt.title }}
+                        </a>
+                    </h5>
+                    
+                    <!-- Description -->
+                    <p class="card-text text-muted small">
+                        {{ prompt.description|truncatewords:20 }}
+                    </p>
+                    
+                    <!-- Meta Info -->
+                    <div class="d-flex justify-content-between align-items-center text-muted small mb-3">
+                        <span>
+                            <i class="fas fa-user"></i> {{ prompt.author.username }}
+                        </span>
+                        <span>
+                            <i class="fas fa-eye"></i> {{ prompt.views }}
+                        </span>
+                    </div>
+                    
+                    <!-- Difficulty & Model -->
+                    <div class="mb-3">
+                        <span class="badge bg-secondary">{{ prompt.get_difficulty_display }}</span>
+                        <span class="badge bg-info text-dark">{{ prompt.get_ai_model_display }}</span>
+                    </div>
+                    
+                    <!-- Action Button -->
+                    <a href="{% url 'prompts:detail' prompt.slug %}" class="btn btn-outline-primary btn-sm w-100">
+                        <i class="fas fa-arrow-right"></i> View Prompt
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav class="mt-5">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Previous</a>
+            </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}">Last</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+    {% else %}
+    <!-- No Results -->
+    <div class="text-center py-5">
+        <i class="fas fa-search fa-4x text-muted mb-3"></i>
+        <h4>No prompts found</h4>
+        <p class="text-muted">Try adjusting your search filters</p>
+        <a href="{% url 'prompts:list' %}" class="btn btn-primary">Clear Filters</a>
+    </div>
+    {% endif %}
+    
+</div>
+{% endblock %}

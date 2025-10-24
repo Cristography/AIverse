@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}News - Prompt Library{% endblock %}
+
+{% block content %}
+
+     Latest News
+    
+    
+    {% if breaking_news %}
+    
+         Breaking News
+        {% for article in breaking_news %}
+        
+            {{ article.title }}
+        
+        {% endfor %}
+    
+    {% endif %}
+    
+    
+    
+        {% for article in articles %}
+        
+            
+                {% if article.featured_image %}
+                
+                {% endif %}
+                
+                    {{ article.category.name }}
+                    {% if article.priority == 'breaking' %}
+                    Breaking
+                    {% endif %}
+                    {{ article.title }}
+                    {{ article.summary|truncatewords:15 }}
+                    
+                         {{ article.published_at|timesince }} ago
+                    
+                    Read More
+                
+            
+        
+        {% empty %}
+        No news articles yet.
+        {% endfor %}
+    
+
+{% endblock %}

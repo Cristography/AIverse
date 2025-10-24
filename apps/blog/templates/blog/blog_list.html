@@ -1,0 +1,61 @@
+
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Blog - Prompt Library{% endblock %}
+
+{% block content %}
+
+     Blog
+    
+    
+    {% if featured_posts %}
+    
+        
+            Featured Posts
+            
+                {% for post in featured_posts %}
+                
+                    
+                        {% if post.featured_image %}
+                        
+                        {% endif %}
+                        
+                            {{ post.title }}
+                            {{ post.excerpt }}
+                            Read More
+                        
+                    
+                
+                {% endfor %}
+            
+        
+    
+    {% endif %}
+    
+    
+    
+        {% for post in posts %}
+        
+            
+                
+                    {{ post.category.name }}
+                    {{ post.title }}
+                    {{ post.excerpt|truncatewords:20 }}
+                    
+                         {{ post.author.username }}
+                         {{ post.views }}
+                    
+                    Read More
+                
+            
+        
+        {% empty %}
+        No blog posts yet.
+        {% endfor %}
+    
+
+{% endblock %}
+```
+

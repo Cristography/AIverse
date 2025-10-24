@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ prompt.title }} - Prompt Library{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            
+            <!-- Back Button -->
+            <a href="{% url 'prompts:list' %}" class="btn btn-sm btn-outline-secondary mb-3">
+                <i class="fas fa-arrow-left"></i> Back to Prompts
+            </a>
+            
+            <!-- Prompt Header -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <!-- Category -->
+                    {% if prompt.category %}
+                    <span class="badge bg-primary mb-2">{{ prompt.category.name }}</span>
+                    {% endif %}
+                    
+                    <!-- Title -->
+                    <h1 class="h2 mb-3">{{ prompt.title }}</h1>
+                    
+                    <!-- Meta Info -->
+                    <div class="d-flex flex-wrap gap-3 text-muted small mb-3">
+                        <span>
+                            <i class="fas fa-user"></i> 
+                            <a href="{% url 'users:profile' prompt.author.username %}" class="text-decoration-none">
+                                {{ prompt.author.username }}
+                            </a>
+                        </span>
+                        <span><i class="fas fa-calendar"></i> {{ prompt.created_at|date:"M d, Y" }}</span>
+                        <span><i class="fas fa-eye"></i> {{ prompt.views }} views</span>
+                        <span><i class="fas fa-heart"></i> {{ prompt.upvotes }} upvotes</span>
+                    </div>
+                    
+                    <!-- Badges -->
+                    <div class="mb-3">
+                        <span class="badge bg-secondary">{{ prompt.get_difficulty_display }}</span>
+                        <span class="badge bg-info text-dark">{{ prompt.get_ai_model_display }}</span>
+                        
+                        {% for tag in prompt.get_tags_list %}
+                        <span class="badge bg-light text-dark">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Description -->
+                    <p class="lead">{{ prompt.description }}</p>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-2 mb-3">
+                        <button class="btn btn-primary" onclick="copyPrompt()">
+                            <i class="fas fa-copy"></i> Copy Prompt
+                        </button>
+                        
+                        {% if user.is_authenticated %}
+                        <button class="btn btn-outline-danger" id="bookmark-btn" onclick="toggleBookmark()">
+                            {% if is_bookmarked %}
+                            <i class="fas fa-bookmark"></i> Bookmarked
+                            {% else %}
+                            <i class="far fa-bookmark"></i> Bookmark
+                            {% endif %}
+                        </button>
+                        {% else %}
+                        <a href="{% url 'users:login' %}?next={{ request.path }}" class="btn btn-outline-secondary">
+                            <i class="far fa-bookmark"></i> Login to Bookmark
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Prompt Text -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-code"></i> Full Prompt</span>
+                    <button class="btn btn-sm btn-light" onclick="copyPrompt()">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                <div class="card-body">
+                    <pre id="prompt-text" class="bg-light p-3 rounded" style="white-space: pre-wrap; word-wrap: break-word;">{{ prompt.prompt_text }}</pre>
+                </div>
+            </div>
+            
+            <!-- Related Prompts -->
+            {% if related_prompts %}
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Related Prompts</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-md-2 g-3">
+                        {% for related in related_prompts %}
+                        <div class="col">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <a href="{% url 'prompts:detail' related.slug %}" class="text-decoration-none">
+                                            {{ related.title }}
+                                        </a>
+                                    </h6>
+                                    <p class="card-text small text-muted">{{ related.description|truncatewords:15 }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            
+            <!-- Author Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-circle fa-4x text-muted mb-3"></i>
+                    <h5>{{ prompt.author.username }}</h5>
+                    <p class="text-muted small mb-3">
+                        {{ prompt.author.prompts.count }} prompt{{ prompt.author.prompts.count|pluralize }} submitted
+                    </p>
+                    <a href="{% url 'users:profile' prompt.author.username %}" class="btn btn-outline-primary btn-sm">
+                        View Profile
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-chart-line"></i> Stats</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <i class="fas fa-eye text-primary"></i> <strong>{{ prompt.views }}</strong> views
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-heart text-danger"></i> <strong>{{ prompt.upvotes }}</strong> upvotes
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-bookmark text-warning"></i> <strong>{{ prompt.bookmarked_by.count }}</strong> bookmarks
+                        </li>
+                        <li>
+                            <i class="fas fa-calendar text-success"></i> Added {{ prompt.created_at|timesince }} ago
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+</div>
+
+<!-- JavaScript for Copy and Bookmark -->
+<script>
+function copyPrompt() {
+    const promptText = document.getElementById('prompt-text').textContent;
+    navigator.clipboard.writeText(promptText).then(() => {
+        // Show success message
+        alert('Prompt copied to clipboard!');
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+    });
+}
+
+{% if user.is_authenticated %}
+function toggleBookmark() {
+    fetch("{% url 'prompts:bookmark_toggle' prompt.slug %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const btn = document.getElementById('bookmark-btn');
+        if (data.is_bookmarked) {
+            btn.innerHTML = '<i class="fas fa-bookmark"></i> Bookmarked';
+            btn.classList.add('active');
+        } else {
+            btn.innerHTML = '<i class="far fa-bookmark"></i> Bookmark';
+            btn.classList.remove('active');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+{% endif %}
+</script>
+
+{% endblock %}

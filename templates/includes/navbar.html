@@ -1,0 +1,102 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'prompts:list' %}">
+            <i class="fas fa-lightbulb"></i> Prompt Library
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Left side navigation -->
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'prompts:list' %}">
+                        <i class="fas fa-home"></i> Browse Prompts
+                    </a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'prompts:create' %}">
+                        <i class="fas fa-plus-circle"></i> Submit Prompt
+                    </a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'blog:list' %}">
+                        <i class="fas fa-book"></i> Blogs
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'news:list' %}">
+                        <i class="fas fa-envelope"></i> News
+                    </a>
+                </li>
+            </ul>
+            
+            <!-- Right side navigation -->
+            <ul class="navbar-nav ms-auto align-items-center">
+                <!-- Theme Toggle -->
+                <li class="nav-item me-2">
+                    <button class="btn btn-sm btn-outline-secondary" id="theme-toggle" title="Toggle Dark Mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </li>
+                
+                <!-- Language Toggle -->
+                <li class="nav-item me-3">
+                    <button class="btn btn-sm btn-outline-secondary" id="language-toggle" title="Switch Language">
+                        <i class="fas fa-language"></i> EN
+                    </button>
+                </li>
+                
+                {% if user.is_authenticated %}
+                    <!-- User Menu -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'users:profile' user.username %}">
+                                    <i class="fas fa-user"></i> My Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'prompts:my_prompts' %}">
+                                    <i class="fas fa-list"></i> My Prompts
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'prompts:my_bookmarks' %}">
+                                    <i class="fas fa-bookmark"></i> My Bookmarks
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'users:logout' %}">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <!-- Login/Register -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:login' %}">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary btn-sm ms-2" href="{% url 'users:register' %}">
+                            Sign Up
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,37 @@
+<footer class="footer bg-dark text-light py-4 mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                <h5><i class="fas fa-lightbulb"></i> Prompt Library</h5>
+                <p class="text-muted">Discover, share, and organize AI prompts for better results.</p>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <h6>Quick Links</h6>
+                <ul class="list-unstyled">
+                    <li><a href="{% url 'prompts:list' %}" class="text-muted text-decoration-none">Browse Prompts</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'prompts:create' %}" class="text-muted text-decoration-none">Submit Prompt</a></li>
+                    {% else %}
+                    <li><a href="{% url 'users:register' %}" class="text-muted text-decoration-none">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <h6>About</h6>
+                <p class="text-muted small">Built with Django & Bootstrap<br>University Project 2025</p>
+            </div>
+        </div>
+        
+        <hr class="border-secondary">
+        
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <p class="mb-0 text-muted small">
+                    &copy; 2025 Prompt Library. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
