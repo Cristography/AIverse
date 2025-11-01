@@ -1,5 +1,12 @@
 # AI Prompt Library - Django Prototype
 
+This project will be implmented fully with seperate backend and frontend:
+Backend: django rest framework you can see [here](https://github.com/Cristography/AIverse-backend)
+Frontend: React and booststrap you can see [here](https://github.com/hiba-dev343/AIverse-frontend)
+Mobile: Flutter (comming soon)
+
+---
+
 A simple full-stack Django web app prototype for discovering, sharing, and organizing AI prompts.
 
 ---
@@ -10,6 +17,7 @@ and its github repo: [here](https://github.com/Cristography/PromptForge)
 
 ---
 
+<img width="1820" height="868" alt="image" src="https://github.com/user-attachments/assets/cf7fd222-7d03-4156-9e95-39831cd963c0" />
 
 ---
 
