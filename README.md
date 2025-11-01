@@ -1,9 +1,9 @@
 # AI Prompt Library - Django Prototype
 
 This project will be implmented fully with seperate backend and frontend:
-Backend: django rest framework you can see [here](https://github.com/Cristography/AIverse-backend)
-Frontend: React and booststrap you can see [here](https://github.com/hiba-dev343/AIverse-frontend)
-Mobile: Flutter (comming soon)
+ - Backend: django rest framework you can see [here](https://github.com/Cristography/AIverse-backend)
+ - Frontend: React and booststrap you can see [here](https://github.com/hiba-dev343/AIverse-frontend)
+ - Mobile: Flutter (comming soon)
 
 ---
 
